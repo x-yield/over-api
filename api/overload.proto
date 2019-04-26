@@ -1,0 +1,453 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+service OverloadService {
+    // Jobs
+    rpc CreateJob (CreateJobRequest) returns (CreateJobResponse) {
+        option (google.api.http) = {
+		    post: "/create_job"
+		    body: "*"
+		};
+    }
+    rpc GetJob (JobRequest) returns (JobResponse) {
+        option (google.api.http) = {
+			get: "/job/{id}"
+		};
+    }
+    rpc GetLastJobs (LastJobsRequest) returns (LastJobsResponse) {
+        option (google.api.http).get = "/lastjobs";
+    }
+
+    rpc GetJobParams (GetJobParamsRequest) returns (GetJobParamsResponse) {
+        option (google.api.http).get = "/job_params";
+    }
+
+    rpc UpdateJob (UpdateJobRequest) returns (UpdateJobResponse) {
+        option (google.api.http) = {
+			post: "/update_job"
+			body: "*"
+		};
+    }
+    rpc DeleteJob (DeleteJobRequest) returns (DeleteJobResponse) {
+        option (google.api.http) = {
+			post: "/delete_job"
+			body: "*"
+		};
+    }
+    // Aggregates
+    rpc CreateAggregates (CreateAggregatesRequest) returns (CreateAggregatesResponse) {
+        option (google.api.http) = {
+            post: "/upload_aggregates"
+            body: "*"
+        };
+    }
+    rpc GetAggregates (GetAggregatesRequest) returns (GetAggregatesResponse) {
+        option (google.api.http) = {
+			get: "/aggregates/{test_id}"
+		};
+    }
+    rpc GetCollections (GetCollectionsRequest) returns (GetCollectionsResponse) {
+        option (google.api.http).get = "/collections";
+    }
+
+    rpc GetCollectionParams (GetCollectionParamsRequest) returns (GetCollectionParamsResponse) {
+        option (google.api.http).get = "/collection_params";
+    }
+
+    // Ammo
+    rpc UploadAmmo (UploadAmmoRequest) returns (UploadAmmoResponse) {
+        option (google.api.http) = {
+            post: "/upload_ammo"
+            body: "*"
+        };
+    }
+    rpc ListAmmo (ListAmmoRequest) returns (ListAmmoResponse) {
+        option (google.api.http) = {
+            get: "/list_ammo"
+        };
+    }
+    rpc DeleteAmmo (DeleteAmmoRequest) returns (DeleteAmmoResponse) {
+        option (google.api.http).get = "/delete_ammo";
+    }
+    // Artifacts
+    rpc UploadArtifact (UploadArtifactRequest) returns (UploadArtifactResponse) {
+        option (google.api.http) = {
+            post: "/upload_artifact"
+            body: "*"
+        };
+    }
+    rpc ListArtifacts (ListArtifactsRequest) returns (ListArtifactsResponse) {
+        option (google.api.http) = {
+            get: "/list_artifacts/{job}"
+        };
+    }
+    // Joints
+    rpc ListJoints (ListJointsRequest) returns (ListJointsResponse) {
+        option (google.api.http) = {
+            get: "/list_joints"
+        };
+    }
+    rpc GetJoint (GetJointRequest) returns (GetJointResponse) {
+        option (google.api.http) = {
+            get: "/joint/{id}"
+        };
+    }
+    rpc CreateJoint (CreateJointRequest) returns (CreateJointResponse) {
+        option (google.api.http) = {
+            post: "/create_joint"
+            body: "*"
+        };
+    }
+    rpc FirestarterValidate (FirestarterValidateRequest) returns (FirestarterValidateResponse) {
+        option (google.api.http) = {
+            post: "/firestarter/validate"
+            body: "*"
+        };
+    }
+    rpc FirestarterPrepare (FirestarterPrepareRequest) returns (FirestarterPrepareResponse) {
+        option (google.api.http) = {
+            post: "/firestarter/prepare"
+            body: "*"
+        };
+    }
+    rpc FirestarterRun (FirestarterRunRequest) returns (FirestarterRunResponse) {
+        option (google.api.http) = {
+            post: "/firestarter/run"
+            body: "*"
+        };
+    }
+    rpc FirestarterStop (FirestarterStopRequest) returns (FirestarterStopResponse) {
+        option (google.api.http) = {
+            post: "/firestarter/stop"
+            body: "*"
+        };
+    }
+    rpc FirestarterPoll (FirestarterPollRequest) returns (FirestarterPollResponse) {
+         option (google.api.http) = {
+            post: "/firestarter/poll"
+            body: "*"
+        };
+    }
+    rpc FirestarterTankSessions (FirestarterTankSessionsRequest) returns (FirestarterTankSessionsResponse) {
+        option (google.api.http).get = "/firestarter/tank_sessions";
+    }
+}
+
+message Job {
+    int32 id = 1;
+    double test_start = 2;
+    double test_stop = 3;
+    string config = 4;
+    string author = 5;
+    string regression_id = 6;
+    string description = 7;
+    string tank = 8;
+    string target = 9;
+    string environment_details = 10;
+    string status = 11;
+    double autostop_time = 12;
+    string autostop_message = 13;
+    int32 imbalance = 14;
+    repeated Collection collections = 15;
+}
+
+message Collection {
+    int32 id = 1;
+    string env = 2;
+    string project = 3;
+    string service = 4;
+    string ref = 5;
+    string name = 6;
+    string author = 7;
+    string type = 8;
+    repeated Job latestJobs = 9;
+}
+
+message CreateJobRequest {
+    double test_start = 1;
+    double test_stop = 2;
+    string config = 3;
+    string author = 4;
+    string regression_id = 5;
+    string description = 6;
+    string tank = 7;
+    string target = 8;
+    string environment_details = 9;
+    repeated Collection collections = 10;
+}
+
+message CreateJobResponse {
+    int32 id = 1;
+}
+
+message JobRequest {
+    int32 id = 1;
+}
+message JobResponse {
+    Job job = 1;
+}
+
+message LastJobsRequest {
+    repeated string page = 1;
+    repeated string limit = 2;
+    repeated string author = 3;
+    repeated string status = 4;
+    repeated string target = 5;
+    repeated string description = 6;
+}
+
+message LastJobsResponse {
+    repeated Job jobs = 1;
+    int32 count = 2;
+}
+
+message GetJobParamsRequest {}
+
+message GetJobParamsResponse {
+    repeated string authors = 1;
+    repeated string statuses = 2;
+    repeated string targets = 3;
+}
+
+message UpdateJobRequest {
+    int32 id = 1;
+    double test_start = 2;
+    double test_stop = 3;
+    string config = 4;
+    string author = 5;
+    string regression_id = 6;
+    string description = 7;
+    string tank = 8;
+    string target = 9;
+    string environment_details = 10;
+    string status = 11;
+    double autostop_time = 12;
+    string autostop_message = 13;
+    int32 imbalance = 14;
+    repeated int32 collections = 15;  // []Collection.Id's
+}
+message UpdateJobResponse {}
+
+message DeleteJobRequest {
+    int32 id = 1;
+}
+message DeleteJobResponse {}
+
+message JobAggregate {
+    int32 id = 1;
+    string label = 2;
+    float q50 = 3;
+    float q75 = 4;
+    float q80 = 5;
+    float q85 = 6;
+    float q90 = 7;
+    float q95 = 8;
+    float q98 = 9;
+    float q99 = 10;
+    float q100 = 11;
+    float avg = 12;
+    string response_code = 13;
+    int64 ok_count = 14;
+    int64 err_count = 15;
+    float net_recv = 16;
+    float net_send = 17;
+    int32 job_id = 18;
+}
+
+message CreateAggregatesRequest {
+    string label = 1;
+    float q50 = 2;
+    float q75 = 3;
+    float q80 = 4;
+    float q85 = 5;
+    float q90 = 6;
+    float q95 = 7;
+    float q98 = 8;
+    float q99 = 9;
+    float q100 = 10;
+    float avg = 11;
+    string response_code = 12;
+    int64 ok_count = 13;
+    int64 err_count = 14;
+    float net_recv = 15;
+    float net_send = 16;
+    int32 job_id = 17;
+}
+message CreateAggregatesResponse {
+    int32 id = 1;
+}
+
+message GetAggregatesRequest {
+    int32 test_id = 1;
+}
+message GetAggregatesResponse {
+    repeated JobAggregate aggregates = 1;
+}
+
+message GetCollectionsRequest {
+    repeated string page = 1;
+    repeated string limit = 2;
+    repeated int32 collection_id = 3;
+    repeated string env = 4;
+    repeated string project = 5;
+    repeated string ref = 6;
+    repeated string name = 7;
+}
+message GetCollectionsResponse {
+    repeated Collection collections = 1;
+    int32 count = 2;
+}
+
+message GetCollectionParamsRequest {
+
+}
+
+message GetCollectionParamsResponse {
+    repeated string envs = 1;
+    repeated Project projects = 2;
+    repeated string refs = 3;
+    repeated string names = 4;
+}
+
+message Project {
+    string project = 1;
+    string service = 2;
+}
+
+message Ammo {
+    string etag = 1;
+    string key = 2;
+    string last_modified = 3;
+    double last_used = 4;
+    string author = 5;
+    int64 size = 6;
+    string path = 7;
+    string type = 8;
+}
+
+message UploadAmmoRequest {
+    string name = 1;
+    string file = 2;
+}
+message UploadAmmoResponse {
+    string url = 1;
+}
+
+message ListAmmoRequest {}
+message ListAmmoResponse {
+    repeated Ammo ammo = 1;
+}
+
+message DeleteAmmoRequest {
+    string key = 1;
+}
+message DeleteAmmoResponse {}
+
+
+message Artifact {
+    string etag = 1;
+    string key = 2;
+    string last_modified = 3;
+    int64 size = 6;
+    string path = 7;
+    int32 job = 9;
+}
+
+message UploadArtifactRequest {
+    string job = 1;
+    string name = 2;
+    string file = 3;
+}
+message UploadArtifactResponse {
+    string url = 1;
+}
+
+message ListArtifactsRequest {
+    int32 job = 1;
+}
+message ListArtifactsResponse {
+    repeated Artifact artifacts = 1;
+}
+
+message Joint {
+    int32 id = 1;
+    repeated Job jobs = 2;
+    string name = 3;
+}
+
+message ListJointsRequest {}
+message ListJointsResponse {
+    repeated Joint joints =  1;
+}
+
+message GetJointRequest {
+    int32 id = 1;
+}
+message GetJointResponse {
+    Joint joint = 1;
+}
+
+message CreateJointRequest {
+    repeated int32 jobs = 1;
+    string name = 2;
+}
+message CreateJointResponse {
+    int32 id = 1;
+}
+
+message TankSession {
+    string tank = 1;
+    string conf = 2;
+    string name = 3;
+    repeated string failures = 4;
+    string stage = 5;
+    string status = 6;
+    string externalId = 7;  // если запускатор (например фронт) запускает несколько стрельб, ему нужно их различать.
+    int32 overloadId = 8; // номер стрельбы
+    string externalJoint = 9;
+    int32 overloadJoint = 10;
+    string author = 11;
+}
+
+message FirestarterValidateRequest {
+    repeated TankSession sessions = 1;
+}
+message FirestarterValidateResponse {
+    repeated TankSession sessions = 1;
+}
+
+message FirestarterPrepareRequest {
+    repeated TankSession sessions = 1;
+}
+message FirestarterPrepareResponse {
+    repeated TankSession sessions = 1;
+}
+
+message FirestarterRunRequest {
+    repeated TankSession sessions = 1;
+}
+message FirestarterRunResponse {
+    repeated TankSession sessions = 1;
+}
+
+message FirestarterStopRequest {
+    repeated TankSession sessions = 1;
+}
+message FirestarterStopResponse {
+    repeated TankSession sessions = 1;
+}
+
+message FirestarterPollRequest {
+    repeated TankSession sessions = 1;
+}
+message FirestarterPollResponse {
+    repeated TankSession sessions = 1;
+}
+
+message FirestarterTankSessionsRequest {
+    string tank = 1;
+}
+message FirestarterTankSessionsResponse {
+    repeated TankSession sessions = 1;
+}

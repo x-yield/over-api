@@ -1,0 +1,30 @@
+#!/bin/sh
+
+# Переходим в рабочую дирректрию с миграциями или в каталог где находится инструмент миграции
+
+if [ "${STAGE}" = "production" ]; then
+    cd /database/migrations
+    export OVERLOAD_API_DB_ADDR=loadtestdb365z20.h.o3.ru
+    export OVERLOAD_API_DB_NAME=loadtest
+    export OVERLOAD_API_DB_USER=loadtest_user
+    export OVERLOAD_API_DB_PASS=agP4Em4Wk6CFb3Q9
+elif [ "${STAGE}" = "staging" ]; then
+    cd /database/migrations
+    export OVERLOAD_API_DB_ADDR=loadtestdb432z20.h.o3.ru
+    export OVERLOAD_API_DB_NAME=loadtest_staging
+    export OVERLOAD_API_DB_USER=loadtest_user
+    export OVERLOAD_API_DB_PASS=heeMahw7vienoobi
+elif [ "${STAGE}" = "development" ]; then
+    cd migrations
+    export OVERLOAD_API_DB_ADDR=loadtestdb432z20.h.o3.ru
+    export OVERLOAD_API_DB_NAME=loadtest_staging
+    export OVERLOAD_API_DB_USER=loadtest_user
+    export OVERLOAD_API_DB_PASS=heeMahw7vienoobi
+fi
+nc -vz $OVERLOAD_API_DB_ADDR 5432
+echo $OVERLOAD_API_DB_ADDR |xxd -a
+if [ "$1" = "--dryrun" ]; then
+    goose -dir . postgres "host=${OVERLOAD_API_DB_ADDR} user=${OVERLOAD_API_DB_USER} dbname=${OVERLOAD_API_DB_NAME} password=${OVERLOAD_API_DB_PASS} sslmode=disable" status
+else
+    goose -dir . postgres "host=${OVERLOAD_API_DB_ADDR} user=${OVERLOAD_API_DB_USER} dbname=${OVERLOAD_API_DB_NAME} password=${OVERLOAD_API_DB_PASS} sslmode=disable" up
+fi
