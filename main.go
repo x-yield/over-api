@@ -1,10 +1,6 @@
 package main
 
 import (
-	"github.com/x-yield/over-api/internal/app/overload-service"
-	"github.com/x-yield/over-api/service"
-	"github.com/x-yield/over-api/tools"
-
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -17,6 +13,10 @@ import (
 	// We're using statik-compiled files of Swagger UI
 	// for the sake of example.
 	_ "github.com/utrack/clay/doc/example/static/statik"
+
+	"github.com/x-yield/over-api/internal/app/overload-service"
+	"github.com/x-yield/over-api/service"
+	"github.com/x-yield/over-api/tools"
 )
 
 func main() {
