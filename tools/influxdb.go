@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/x-yield/over-api/internal/config"
 )
 
 // InfluxDb - db params. used as a db conector
@@ -89,11 +87,11 @@ func (db *InfluxDB) Select(query string, format string) (string, error) {
 // NewInfluxDbConnector - returns InfluxDB populated with db params
 func NewInfluxDbConnector() *InfluxDB {
 	return &InfluxDB{
-		host:     config.GetValue(context.Background(), config.InfluxdbAddr).String(),
-		port:     config.GetValue(context.Background(), config.InfluxdbPort).String(),
-		database: config.GetValue(context.Background(), config.InfluxdbName).String(),
-		username: config.GetValue(context.Background(), config.InfluxdbUser).String(),
-		password: config.GetValue(context.Background(), config.InfluxdbPass).String(),
+		host:     "host",
+		port:     "port",
+		database: "db",
+		username: "user",
+		password: "pass",
 	}
 }
 

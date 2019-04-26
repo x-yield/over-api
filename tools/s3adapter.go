@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/pkg/errors"
 
-	"github.com/x-yield/over-api/internal/config"
+	//"github.com/x-yield/over-api/internal/config"
 )
 
 const (
