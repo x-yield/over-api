@@ -4,22 +4,22 @@
 
 if [ "${STAGE}" = "production" ]; then
     cd /database/migrations
-    export OVERLOAD_API_DB_ADDR=loadtestdb365z20.h.o3.ru
-    export OVERLOAD_API_DB_NAME=loadtest
-    export OVERLOAD_API_DB_USER=loadtest_user
-    export OVERLOAD_API_DB_PASS=agP4Em4Wk6CFb3Q9
+    export OVERLOAD_API_DB_ADDR=host:port
+    export OVERLOAD_API_DB_NAME=dbname
+    export OVERLOAD_API_DB_USER=dbuser
+    export OVERLOAD_API_DB_PASS=dbpass
 elif [ "${STAGE}" = "staging" ]; then
     cd /database/migrations
-    export OVERLOAD_API_DB_ADDR=loadtestdb432z20.h.o3.ru
-    export OVERLOAD_API_DB_NAME=loadtest_staging
-    export OVERLOAD_API_DB_USER=loadtest_user
-    export OVERLOAD_API_DB_PASS=heeMahw7vienoobi
+    export OVERLOAD_API_DB_ADDR=host:port
+    export OVERLOAD_API_DB_NAME=dbname
+    export OVERLOAD_API_DB_USER=dbuser
+    export OVERLOAD_API_DB_PASS=dbpass
 elif [ "${STAGE}" = "development" ]; then
     cd migrations
-    export OVERLOAD_API_DB_ADDR=loadtestdb432z20.h.o3.ru
-    export OVERLOAD_API_DB_NAME=loadtest_staging
-    export OVERLOAD_API_DB_USER=loadtest_user
-    export OVERLOAD_API_DB_PASS=heeMahw7vienoobi
+    export OVERLOAD_API_DB_ADDR=host:port
+    export OVERLOAD_API_DB_NAME=dbname
+    export OVERLOAD_API_DB_USER=dbuser
+    export OVERLOAD_API_DB_PASS=dbpass
 fi
 nc -vz $OVERLOAD_API_DB_ADDR 5432
 echo $OVERLOAD_API_DB_ADDR |xxd -a
