@@ -2,7 +2,6 @@ package tools
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"net/http"

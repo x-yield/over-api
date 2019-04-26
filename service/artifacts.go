@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -40,7 +41,7 @@ func (s *OverloadService) UploadAmmo(req *overload.UploadAmmoRequest) (*overload
 	}
 	err = s.Db.Insert(ammo)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to create new ammo: %v", err)), errors.Internal)
+		return nil, errors.New(fmt.Sprintf("Failed to create new ammo: %v", err))
 	}
 
 	return &overload.UploadAmmoResponse{Url: url}, nil
@@ -125,12 +126,12 @@ func (s *OverloadService) ListAmmo(req *overload.ListAmmoRequest) (*overload.Lis
 func (s *OverloadService) DeleteAmmo(req *overload.DeleteAmmoRequest) (*overload.DeleteAmmoResponse, error) {
 	key := req.Key
 	if key == "" {
-		return nil, errors.WrapC(errors.New("Key param is mandatory"), errors.BadRequest)
+		return nil, errors.New("Key param is mandatory")
 	}
 	err := s.S3.DeleteAmmo(context.Background(), key)
 	if err != nil {
 		log.Println(err)
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to delete ammo: %v", err)), errors.Internal)
+		return nil, errors.New(fmt.Sprintf("Failed to delete ammo: %v", err))
 	}
 	return &overload.DeleteAmmoResponse{}, err
 }

@@ -39,7 +39,7 @@ func main() {
 	overloadImpl := overload.NewOverloadService(overloadSrv)
 
 	srv := server.NewServer(
-		12345,
+		7000,
 		// Pass our mux with Swagger UI
 		server.WithHTTPMux(hmux),
 		// Recover from both HTTP and gRPC panics and use our own middleware

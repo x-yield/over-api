@@ -1,12 +1,13 @@
 package service
 
 import (
+	"errors"
 	"fmt"
-	"github.com/go-pg/pg/orm"
 	"log"
 	"net/url"
 
 	"github.com/go-pg/pg"
+	"github.com/go-pg/pg/orm"
 
 	"github.com/x-yield/over-api/internal/models"
 	"github.com/x-yield/over-api/pkg/overload-service"
@@ -40,13 +41,13 @@ func (s *OverloadService) GetCollections(req *overload.GetCollectionsRequest) (*
 
 	count, err := query.Count()
 	if err != nil {
-		log.Println(errors.WrapC(errors.New(
-			fmt.Sprintf("Failed to count jobs: %v", err)), errors.Internal))
+		log.Println(errors.New(
+			fmt.Sprintf("Failed to count jobs: %v", err)))
 	}
 	err = query.Apply(orm.Pagination(urlValues)).Order("id DESC").Select()
 
 	if err != nil {
-		if errMsg := setErrMsg("Failed to get collections: %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to get collections: %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -61,7 +62,7 @@ func (s *OverloadService) GetCollections(req *overload.GetCollectionsRequest) (*
 			Limit(lastJobsAmountForCollection).
 			Select()
 		if err != nil {
-			if errMsg := setErrMsg("Failed to get collections: %+v", err, errors.Internal); errMsg != nil {
+			if errMsg := setErrMsg("Failed to get collections: %+v", err); errMsg != nil {
 				return nil, errMsg
 			}
 		}
@@ -109,7 +110,7 @@ func (s *OverloadService) GetCollectionParams(req *overload.GetCollectionParamsR
 	)
 	err := s.Db.Model(&collections).ColumnExpr("DISTINCT env").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct env : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct env : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -118,7 +119,7 @@ func (s *OverloadService) GetCollectionParams(req *overload.GetCollectionParamsR
 	}
 	err = s.Db.Model(&collections).ColumnExpr("DISTINCT project, service").Where("project != '' ").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct project : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct project : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -130,7 +131,7 @@ func (s *OverloadService) GetCollectionParams(req *overload.GetCollectionParamsR
 	}
 	err = s.Db.Model(&collections).ColumnExpr("DISTINCT ref").Where("ref != '' ").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct refs : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct refs : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -139,7 +140,7 @@ func (s *OverloadService) GetCollectionParams(req *overload.GetCollectionParamsR
 	}
 	err = s.Db.Model(&collections).ColumnExpr("DISTINCT name").Where("name != '' ").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct name : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct name : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}

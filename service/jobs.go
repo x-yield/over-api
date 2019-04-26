@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"github.com/go-pg/pg/orm"
 	"log"
@@ -24,7 +25,7 @@ func (s *OverloadService) GetJob(req *overload.JobRequest) (*overload.JobRespons
 
 	err := s.Db.Select(&job)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to select job: %v", err)), errors.NotFound)
+		return nil, errors.New(fmt.Sprintf("Failed to select job: %v", err))
 	}
 
 	var collections []*models.Collection
@@ -32,7 +33,7 @@ func (s *OverloadService) GetJob(req *overload.JobRequest) (*overload.JobRespons
 	if len(job.CollectionIds) > 0 {
 		err = s.Db.Model(&collections).Where("id in (?)", pg.In(job.CollectionIds)).Select()
 		if err != nil {
-			if errMsg := setErrMsg("Failed to select collections for this job : %+v", err, errors.NotFound); errMsg != nil {
+			if errMsg := setErrMsg("Failed to select collections for this job : %+v", err); errMsg != nil {
 				return nil, errMsg
 			}
 		}
@@ -79,7 +80,7 @@ func (s *OverloadService) DeleteJob(req *overload.DeleteJobRequest) (*overload.D
 	// delete job
 	err := s.Db.Delete(&job)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to delete job: %v", err)), errors.NotFound)
+		return nil, errors.New(fmt.Sprintf("Failed to delete job: %v", err))
 	}
 
 	return &overload.DeleteJobResponse{}, nil
@@ -107,13 +108,13 @@ func (s *OverloadService) GetLastJobs(req *overload.LastJobsRequest) (*overload.
 
 	count, err := query.Count()
 	if err != nil {
-		log.Println(errors.WrapC(errors.New(
-			fmt.Sprintf("Failed to count jobs: %v", err)), errors.Internal))
+		log.Println(errors.New(
+			fmt.Sprintf("Failed to count jobs: %v", err)))
 	}
 	err = query.Apply(orm.Pagination(urlValues)).Order("id DESC").Select()
 
 	if err != nil {
-		if errMsg := setErrMsg("Failed to get jobs: %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to get jobs: %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -125,7 +126,7 @@ func (s *OverloadService) GetLastJobs(req *overload.LastJobsRequest) (*overload.
 		if len(job.CollectionIds) > 0 {
 			err := s.Db.Model(&collections).Where("id in (?)", pg.In(job.CollectionIds)).Select()
 			if err != nil {
-				if errMsg := setErrMsg("Failed to select collections for this job: %v", err, errors.NotFound); errMsg != nil {
+				if errMsg := setErrMsg("Failed to select collections for this job: %v", err); errMsg != nil {
 					return nil, errMsg
 				}
 
@@ -180,7 +181,7 @@ func (s *OverloadService) GetJobParams(req *overload.GetJobParamsRequest) (*over
 	)
 	err := s.Db.Model(&jobs).ColumnExpr("DISTINCT author").Where("author != '' ").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct author : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct author : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -189,7 +190,7 @@ func (s *OverloadService) GetJobParams(req *overload.GetJobParamsRequest) (*over
 	}
 	err = s.Db.Model(&jobs).ColumnExpr("DISTINCT status").Where("status != '' ").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct status : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct status : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -198,7 +199,7 @@ func (s *OverloadService) GetJobParams(req *overload.GetJobParamsRequest) (*over
 	}
 	err = s.Db.Model(&jobs).ColumnExpr("DISTINCT target").Where("target != '' ").Select()
 	if err != nil {
-		if errMsg := setErrMsg("Failed to select distinct targets : %+v", err, errors.Internal); errMsg != nil {
+		if errMsg := setErrMsg("Failed to select distinct targets : %+v", err); errMsg != nil {
 			return nil, errMsg
 		}
 	}
@@ -224,8 +225,8 @@ func (s *OverloadService) GetLastJobId() (int32, error) {
 	}
 
 	if len(lastJob) == 0 {
-		return 0, errors.WrapC(errors.New(
-			"No jobs in db at all"), errors.Internal)
+		return 0, errors.New(
+			"No jobs in db at all")
 	}
 	return lastJob[0].Id, nil
 }
@@ -245,7 +246,7 @@ func (s *OverloadService) CreateJob(req *overload.CreateJobRequest) (*overload.C
 	}
 	err := s.Db.Insert(job)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to create new job: %v", err)), errors.Internal)
+		return nil, errors.New(fmt.Sprintf("Failed to create new job: %v", err))
 	}
 
 	// collection syntax check
@@ -256,7 +257,7 @@ func (s *OverloadService) CreateJob(req *overload.CreateJobRequest) (*overload.C
 				pendingCollection.Name == "" ||
 				pendingCollection.Ref == "" ||
 				pendingCollection.Project == "" {
-				return nil, errors.WrapC(errors.New(fmt.Sprintf("Malformed collection syntax, should have `env`, `name`, `project, `ref` columns")), errors.BadRequest)
+				return nil, errors.New(fmt.Sprintf("Malformed collection syntax, should have `env`, `name`, `project, `ref` columns"))
 			}
 		}
 
@@ -290,23 +291,23 @@ func (s *OverloadService) UpdateJob(req *overload.UpdateJobRequest) (*overload.U
 
 	err := s.Db.Select(&selectJob)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to select job: %v", err)), errors.NotFound)
+		return nil, errors.New(fmt.Sprintf("Failed to select job: %v", err))
 	}
 
 	if selectJob.Status == "stopped" {
 		job.Status = "stopped"
 		_, err = s.Db.Model(job).WherePK().UpdateNotNull()
 		if err != nil {
-			return nil, errors.WrapC(errors.New(
-				fmt.Sprintf("Failed to update job: %v", err)), errors.Internal)
+			return nil, errors.New(
+				fmt.Sprintf("Failed to update job: %v", err))
 		}
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Stopped the test, %v", req.Status)), errors.CodeGone)
+		return nil, errors.New(fmt.Sprintf("Stopped the test, %v", req.Status))
 	}
 
 	_, err = s.Db.Model(job).WherePK().UpdateNotNull()
 	if err != nil {
-		return nil, errors.WrapC(errors.New(
-			fmt.Sprintf("Failed to update job: %v", err)), errors.Internal)
+		return nil, errors.New(
+			fmt.Sprintf("Failed to update job: %v", err))
 	}
 
 	if req.AutostopTime > 0 {
@@ -328,7 +329,7 @@ func (s *OverloadService) CalculateImbalance(job *models.Job) {
 
 	err := s.Db.Select(job)
 	if err != nil {
-		log.Println(errors.WrapC(errors.New(fmt.Sprintf("Failed to select job: %v", err)), errors.NotFound))
+		log.Println(errors.New(fmt.Sprintf("Failed to select job: %v", err)))
 	}
 
 	interval := int64(job.TestStop-job.TestStart) * intervalPercents / 100 // значение интервала в секундах
@@ -383,8 +384,8 @@ func (s *OverloadService) CalculateImbalance(job *models.Job) {
 	} else {
 		_, err = s.Db.Model(job).WherePK().UpdateNotNull()
 		if err != nil {
-			log.Println(errors.WrapC(errors.New(
-				fmt.Sprintf("Failed to update job: %v", err)), errors.Internal))
+			log.Println(errors.New(
+				fmt.Sprintf("Failed to update job: %v", err)))
 		}
 	}
 }
@@ -439,9 +440,9 @@ func setWhereStmt(items []string, criteria string, query *orm.Query) *orm.Query 
 	return query
 }
 
-func setErrMsg(description string, err error, stmt errors.ErrorCode) error {
+func setErrMsg(description string, err error) error {
 	if err.Error() == "pg: no rows in result set" {
 		return nil
 	}
-	return errors.WrapC(errors.New(fmt.Sprintf(description, err)), stmt)
+	return errors.New(fmt.Sprintf(description, err))
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/x-yield/over-api/internal/models"
@@ -14,9 +15,8 @@ func (s *OverloadService) CreateJoint(req *overload.CreateJointRequest) (*overlo
 	}
 	err := s.Db.Insert(joint)
 	if err != nil {
-		return nil, errors.WrapC(
-			errors.New(
-				fmt.Sprintf("Failed to create new joint: %v", err)), errors.Internal)
+		return nil, errors.New(
+				fmt.Sprintf("Failed to create new joint: %v", err))
 	}
 
 	return &overload.CreateJointResponse{Id: joint.Id}, nil
@@ -27,8 +27,8 @@ func (s *OverloadService) ListJoints(req *overload.ListJointsRequest) (*overload
 	err := s.Db.Model(&joints).Order("id DESC").Select()
 
 	if err != nil {
-		return nil, errors.WrapC(errors.New(
-			fmt.Sprintf("Failed to get joints: %v", err)), errors.Internal)
+		return nil, errors.New(
+			fmt.Sprintf("Failed to get joints: %v", err))
 	}
 	var preparedJoints []*overload.Joint
 	for _, joint := range joints {
@@ -55,7 +55,7 @@ func (s *OverloadService) GetJoint(req *overload.GetJointRequest) (*overload.Get
 
 	err := s.Db.Select(&joint)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(fmt.Sprintf("Failed to select joint: %v", err)), errors.NotFound)
+		return nil, errors.New(fmt.Sprintf("Failed to select joint: %v", err))
 	}
 
 	thisJointJobs, err := s.GetJointJobs(joint.Jobs)
@@ -81,8 +81,8 @@ func (s *OverloadService) GetJointJobs(jobIds []int32) ([]*overload.Job, error) 
 		}
 		err := s.Db.Model(&job).WherePK().Select()
 		if err != nil {
-			return nil, errors.WrapC(errors.New(
-				fmt.Sprintf("Failed to get job associated w/ joint: %v", err)), errors.Internal)
+			return nil, errors.New(
+				fmt.Sprintf("Failed to get job associated w/ joint: %v", err))
 		}
 		preparedJob := &overload.Job{
 			Id:              job.Id,

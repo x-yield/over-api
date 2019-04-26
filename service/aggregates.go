@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/x-yield/over-api/internal/models"
@@ -12,8 +13,8 @@ func (s *OverloadService) GetAggregates(req *overload.GetAggregatesRequest) (*ov
 
 	err := s.Db.Model(&aggregates).Where("job_id = ?", req.TestId).Select()
 	if err != nil {
-		return nil, errors.WrapC(errors.New(
-			fmt.Sprintf("Failed to get job aggregates: %v", err)), errors.Internal)
+		return nil, errors.New(
+			fmt.Sprintf("Failed to get job aggregates: %v", err))
 	}
 
 	var preparedAggregates []*overload.JobAggregate
@@ -67,8 +68,8 @@ func (s *OverloadService) CreateAggregates(req *overload.CreateAggregatesRequest
 	}
 	err := s.Db.Insert(aggregate)
 	if err != nil {
-		return nil, errors.WrapC(errors.New(
-			fmt.Sprintf("Failed to create aggregates: %v", err)), errors.Internal)
+		return nil, errors.New(
+			fmt.Sprintf("Failed to create aggregates: %v", err))
 	}
 	return &overload.CreateAggregatesResponse{Id: aggregate.Id}, nil
 }

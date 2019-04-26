@@ -11,8 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/pkg/errors"
-
-	//"github.com/x-yield/over-api/internal/config"
 )
 
 const (
@@ -58,9 +56,9 @@ func (s *S3service) GetArtifactsBucket() string {
 func NewS3Service() *S3service {
 
 	var (
-		s3Endpoint = config.GetValue(context.Background(), config.S3Endpoint).String()
-		s3Access   = config.GetValue(context.Background(), config.S3Access).String()
-		s3Secret   = config.GetValue(context.Background(), config.S3Secret).String()
+		s3Endpoint = "s3 endpoint"
+		s3Access   = "s3 access"
+		s3Secret   = "s3 secret"
 	)
 
 	s3Config := &aws.Config{
